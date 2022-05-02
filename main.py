@@ -1,58 +1,13 @@
-import random
-import builtins
-import random
+from random import randint
 import time
 import keyboard
+from rich import print
 
-
-def setup():
-  # set up the variables to be used in game
-  return {
-    # Identification of variables in the program
-    # amount spent on animals
-    "animals": 0,
-    # amount spent on ammunition
-    "ammunition": 0,
-    # amount spent on clothing
-    "clothing": 0,
-    # flag for insufficient clothing in cold weather
-    "insufficient_clothing": False,
-    # counter in generating events
-    "event_counter": 0,
-    # turn number for setting date
-    "game_turn": 0,
-    # choice of shooting expertise level
-    "shooting_expert_level": 0,
-    # choice of eating
-    "eating_choice": 0,
-    # amount spent on food
-    "food": 0,
-    # flag for clearing south pass
-    "south_pass_flag": False,
-    # flag for injury
-    "injury": False,
-    # flag for blizzard
-    "blizzard": False,
-    # total mileage whole trip
-    "mileage": 0,
-    # amount spent on miscellaneous supplies
-    "supplies": 0,
-    # total mileage up through previous turn
-    "turn_mileage": 0,
-    # flag for clearing south pass in setting mileage
-    "South_Pass_Mileage_Flag": False,
-    # flag for illness
-    "illness": False,
-    # cash in your wallet
-    "cash": 700,
-    # flag for fort option
-    "fort_flag": False
-  }
-  # return game_variables
+import config as c
 
 
 def get_random(min, max):
-  return random.randint(min, max)
+  return randint(min, max)
 
 
 def shooting():
@@ -227,22 +182,19 @@ def dying(reason):
 def buying_routine(object_name, min_amount, max_amount, wallet):
   my_purchase = 0
   while True:
-    try:
-      my_purchase = int(builtins.input(
-        "Wallet: " + str(wallet) + ". How much do you want to spend on your " + object_name + ": "))
-    except ValueError:
-      print("Sorry, I didn't understand that.")
-    if my_purchase < min_amount:
-      print("Sorry, that is not enough.")
-      continue
-    elif my_purchase > max_amount:
-      print("Sorry, that is too much.")
-      continue
-    elif my_purchase > wallet:
-      print("You don't have that much - keep your spending down.")
+    my_purchase = input(f"Wallet: {wallet}. How much do you want to spend on your {object_name}: ")
+    if my_purchase.isdigit():
+      my_purchase = int(my_purchase)
+      if my_purchase < min_amount:
+        print("Sorry, that is not enough.")
+      elif my_purchase > max_amount:
+        print("Sorry, that is too much.")
+      elif my_purchase > wallet:
+        print("You don't have that much - keep your spending down.")
+      else:
+        return my_purchase
     else:
-      break
-  return my_purchase
+      print("Sorry, I didn't understand that.")
 
 
 def initial_purchases(game_variables):
@@ -423,7 +375,7 @@ def game_loop(game_variables):
   if not game_variables["fort_flag"]:
     while True:
       try:
-        input_x = int(builtins.input("\nDo you want to (1) Hunt, or (2) Continue: "))
+        input_x = int(input("\nDo you want to (1) Hunt, or (2) Continue: "))
       except ValueError:
         print("Sorry, I didn't understand that.")
       if input_x < 1 or input_x > 2:
@@ -438,7 +390,7 @@ def game_loop(game_variables):
   else:
     while True:
       try:
-        input_x = int(builtins.input("\nDo you want to (1) Stop at the next fort, (2) Hunt, or (3) Continue: "))
+        input_x = int(input("\nDo you want to (1) Stop at the next fort, (2) Hunt, or (3) Continue: "))
       except ValueError:
         print("Sorry, I didn't understand that.")
       if input_x < 1 or input_x > 3:
@@ -458,7 +410,7 @@ def game_loop(game_variables):
     dying("no_food")
   while True:
     try:
-      input_x = int(builtins.input("Do you want to eat (1) Poorly, (2) Moderately, or (3) Well: "))
+      input_x = int(input("Do you want to eat (1) Poorly, (2) Moderately, or (3) Well: "))
     except ValueError:
       print("Sorry, I didn't understand that.")
     amount_food = (8 + 5 * input_x)
@@ -651,7 +603,7 @@ def riders(game_variables):
 
     while True:
       try:
-        my_tactic = int(builtins.input("\nTactics\n(1) Run (2) Attack (3) Continue (4) Circle Wagons: "))
+        my_tactic = int(input("\nTactics\n(1) Run (2) Attack (3) Continue (4) Circle Wagons: "))
       except ValueError:
         print("Sorry, I didn't understand that.")
       if 0 < my_tactic < 4:
@@ -725,8 +677,8 @@ def riders(game_variables):
 
 
 def start_game():
-  game_variables = setup()
-  if builtins.input("Do you need instructions (yes/no) ") == 'yes':
+  game_variables = c.game_variables
+  if input("Do you need instructions (yes/no):\t")[0].lower() == 'y':
     instructions()
 
   game_week_dates = [
@@ -738,7 +690,7 @@ def start_game():
   print("\nHow good a shot are you with your rifle?")
   print("\t(1) ace marksman, (2) good shot, (3) fair to middlin'")
   print("\t(4) need more practice, (5) shaky knees")
-  my_shooting = abs(int(builtins.input(
+  my_shooting = abs(int(input(
     "Enter one of the above -- the better you claim you are, the\n"
     "faster you'll have to be with your gun to be successful: ")))
   if my_shooting > 5 or my_shooting < 1:
