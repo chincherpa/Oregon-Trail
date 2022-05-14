@@ -11,7 +11,7 @@ def get_random(min, max):
 
 
 def shooting():
-  print("\nYou pull your gun, aim, and pull the trigger")
+  print("\nYou grab your gun, aim, and pull the trigger")
   print("\nPress Spacebar")
   start_time = time.time()
   seconds = 15
